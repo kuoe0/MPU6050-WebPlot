@@ -50,7 +50,8 @@ def parse_pending():
 
     for lines in split_lines:
         values = lines.split(',')[0]
-        signals.append(values)
+        if values:
+            signals.append(int(values))
 
 class query_signal_handler(tornado.web.RequestHandler):
 
@@ -61,7 +62,7 @@ class query_signal_handler(tornado.web.RequestHandler):
     def handle_request(self):
         global signals
         self.number_of_signal = 300
-        ret = json.dumps(signals[:self.number_of_signal])
+        ret = json.dumps([list(s) for s in enumerate(signals[:self.number_of_signal])])
         self.write(ret)
         signals.pop(0)
 
