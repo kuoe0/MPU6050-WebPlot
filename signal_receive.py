@@ -24,40 +24,36 @@ serial_baudrate = int(sys.argv[2])
 ser = serial.Serial(serial_port, serial_baudrate)
 
 # global variable
-serial_pending = ""
+number_of_signal = 200
+serial_pending = list()
 signals = list()
+signal_type = ['x-acc', 'y-acc', 'z-acc', 'x-gyro', 'y-gyro', 'z-gyro']
 
 # receive signal with a non-blocking way
 def recieve_signal():
+
     try:
-        data = ser.read(ser.inWaiting())
-    except:
+        if ser.inWaiting() != 0:
+            data = ser.readline()
+    except Exception as e:
         print "Error reading from {0}".format(serial_port)
+        template = "An exception of type {0} occured. Arguments:\n{1!r}"
+        message = template.format(type(e).__name__, e.args)
+        print message
 
     if len(data):
-        global serial_pending
-        serial_pending = serial_pending + data
-        parse_pending()
+        parse_pending(data)
 
 # parse out the signal value
-def parse_pending():
-    global serial_pending
+def parse_pending(signal_string):
+
     global signals
+    # split by ',' and get first element
+    values = [int(x) for x in signal_string.split(',')]
 
-    # parse by newline
-    split_lines = serial_pending.split()
-    # the last element maybe incomplete, so leave it to pending string
-    serial_pending = split_lines[-1]
-    # remove the last element
-    split_lines = split_lines[:-1]
-
-    for lines in split_lines:
-        # split by ',' and get first element
-        values = lines.split(',')[0]
-
-        # push signal into list
-        if values:
-            signals.append(int(values))
+    # push signal into list
+    if len(values) == 6:
+        signals.append(values)
 
 # tornado web handler
 class query_signal_handler(tornado.web.RequestHandler):
@@ -71,10 +67,19 @@ class query_signal_handler(tornado.web.RequestHandler):
     # return signals
     def handle_request(self, callback):
         global signals
-        # number of signals
-        self.number_of_signal = 300
-        # zip and convert to JSON format
-        ret = json.dumps({'data': [list(s) for s in enumerate(signals[:self.number_of_signal])]})
+        global number_of_signal
+        # retrieve signal needed
+        ret_signals = signals[:number_of_signal]
+        # transpose the list
+        ret_signals = zip(*ret_signals)
+
+        # create list of dict
+        ret = list()
+        for i in xrange(6):
+            ret.append({ 'data': [p for p in enumerate(ret_signals[i])], 'label': signal_type[i] })
+
+        # convert to JSON format
+        ret = json.dumps({'data': ret})
         # convert to JSONP format
         ret = '{0}({1})'.format(callback, ret)
         # set content type
@@ -89,8 +94,8 @@ application = tornado.web.Application([(r"/", query_signal_handler),])
 
 if __name__ == "__main__":
 
-    #tell tornado to run checkSerial every 10ms
-    serial_loop = tornado.ioloop.PeriodicCallback(recieve_signal, 10)
+    #tell tornado to run checkSerial every 50 ms
+    serial_loop = tornado.ioloop.PeriodicCallback(recieve_signal, 30)
     serial_loop.start()
 
     application.listen(tornado_port)
