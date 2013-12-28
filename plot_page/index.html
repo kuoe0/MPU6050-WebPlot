@@ -9,25 +9,36 @@
 
 			$(function() {
 
-				function getData() {
-					var url = 'http://localhost:8888/?callback=?';
-					$.getJSON(url, (function(data) {
-						$('#signal-plot').empty();
-						console.log(data.data);
-						$.each(data.data, function(idx, value) {
-							$('#signal-plot').append("<p>" + value + "</p>");
-						});
-
-					}));
-				};
-
+				var number_of_signal = 300;
 				// set update interval in micro second (ms)
-				var updateInterval = 10;
-				function update() {
-					getData();
+				var updateInterval = 1;
 
+				function update() {
+					var url = 'http://localhost:8888/?callback=?';
+					$.getJSON(url, function(data) {
+						plot.setData([data.data]);
+						plot.draw();
+					});
 					setTimeout(update, updateInterval);
 				};
+
+				var init = [];
+				for (var i = 0; i < number_of_signal; ++i) {
+					init.push([i, 0]);
+				}
+
+				var plot = $.plot('#signal-plot', [init], {
+					series: {
+						shadowSize: 0
+					},
+					yaxis: {
+						min: -36000,
+						max: 36000
+					},
+					xaxis: {
+						show: false
+					}
+				});
 
 				update();
 
@@ -38,7 +49,7 @@
 	</head>
 	<body>
 
-		<div id="signal-plot" style="width: 600px; height: 300px"></dev>
+		<div id="signal-plot" style="width: 1000px; height: 500px"></dev>
 		
 	</body>
 </html>
