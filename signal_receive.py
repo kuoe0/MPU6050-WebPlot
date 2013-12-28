@@ -44,27 +44,44 @@ def parse_pending():
     global serial_pending
     global signals
 
+    # parse by newline
     split_lines = serial_pending.split()
+    # the last element maybe incomplete, so leave it to pending string
     serial_pending = split_lines[-1]
+    # remove the last element
     split_lines = split_lines[:-1]
 
     for lines in split_lines:
+        # split by ',' and get first element
         values = lines.split(',')[0]
+
+        # push signal into list
         if values:
             signals.append(int(values))
 
+# tornado web handler
 class query_signal_handler(tornado.web.RequestHandler):
 
     def get(self, url='/'):
         print 'get'
-        self.handle_request()
+        # get the name of callback parameter
+        callback_func = self.get_argument('callback')
+        self.handle_request(callback_func)
     
-    def handle_request(self):
+    # return signals
+    def handle_request(self, callback):
         global signals
+        # number of signals
         self.number_of_signal = 300
+        # zip and convert to JSON format
         ret = json.dumps({'data': [list(s) for s in enumerate(signals[:self.number_of_signal])]})
+        # convert to JSONP format
+        ret = '{0}({1})'.format(callback, ret)
+        # set content type
         self.set_header("Content-Type", "application/json")
+        # write data
         self.write(ret)
+        # remove first element to realtime plot
         signals.pop(0)
 
 
