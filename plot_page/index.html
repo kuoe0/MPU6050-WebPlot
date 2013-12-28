@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+	<head>
+        <meta charset="utf-8" />
+		<title>MPU6050 Signal Plotting</title>
+		<script language="javascript" type="text/javascript" src="flot/jquery.min.js"></script>
+		<script language="javascript" type="text/javascript" src="flot/jquery.flot.min.js"></script>
+		<script>
+
+			$(function() {
+
+				function getData() {
+					var url = 'http://localhost:8888/?callback=?';
+					$.getJSON(url, (function(data) {
+						$('#signal-plot').empty();
+						console.log(data.data);
+						$.each(data.data, function(idx, value) {
+							$('#signal-plot').append("<p>" + value + "</p>");
+						});
+
+					}));
+				};
+
+				// set update interval in micro second (ms)
+				var updateInterval = 10;
+				function update() {
+					getData();
+
+					setTimeout(update, updateInterval);
+				};
+
+				update();
+
+			});
+		
+
+		</script>
+	</head>
+	<body>
+
+		<div id="signal-plot" style="width: 600px; height: 300px"></dev>
+		
+	</body>
+</html>
+
