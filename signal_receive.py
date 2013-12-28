@@ -24,9 +24,9 @@ serial_baudrate = int(sys.argv[2])
 ser = serial.Serial(serial_port, serial_baudrate)
 
 # global variable
-number_of_signal = 200
+number_of_signal = 300
 serial_pending = list()
-signals = list()
+signals = [[0] * 6] * number_of_signal
 signal_type = ['x-acc', 'y-acc', 'z-acc', 'x-gyro', 'y-gyro', 'z-gyro']
 
 # receive signal with a non-blocking way
