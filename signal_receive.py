@@ -63,6 +63,7 @@ class query_signal_handler(tornado.web.RequestHandler):
         global signals
         self.number_of_signal = 300
         ret = json.dumps({'data': [list(s) for s in enumerate(signals[:self.number_of_signal])]})
+        self.set_header("Content-Type", "application/json")
         self.write(ret)
         signals.pop(0)
 
