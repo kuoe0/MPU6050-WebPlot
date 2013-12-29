@@ -21,11 +21,11 @@ Requirement
 
 **Python**
 
-- pyserial
-- tornado
+- pyserial 2.7
+- tornado 3.1.1
 
 **Javascript**
 
 - jQuery
-- Flot
+- Flot 0.8.2
 
