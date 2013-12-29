@@ -3,8 +3,16 @@
 	<head>
         <meta charset="utf-8" />
 		<title>MPU6050 Signal Plotting</title>
-		<script language="javascript" type="text/javascript" src="flot/jquery.min.js"></script>
-		<script language="javascript" type="text/javascript" src="flot/jquery.flot.min.js"></script>
+
+
+		<link rel="stylesheet" type="text/css" href="normalize.css" />
+		<link rel="stylesheet" type="text/css" href="style.css" />
+
+		<link rel="stylesheet" type="text/css" href="package/semantic/css/semantic.min.css" />
+		<script language="javascript" type="text/javascript" src="package/semantic/javascript/semantic.min.js"></script>
+
+		<script language="javascript" type="text/javascript" src="package/flot/jquery.min.js"></script>
+		<script language="javascript" type="text/javascript" src="package/flot/jquery.flot.min.js"></script>
 		<script>
 
 			$(function() {
@@ -38,8 +46,9 @@
 
 				var plot = $.plot('#signal-plot', init, {
 					series: { 
-						lines: { show: true },
+						lines: { show: true, lineWidth: 1 },
 						shadowSize: 0 },
+					xaxis: { show: false },
 					yaxis: { min: -36000, max: 36000 },
 					legend: { position: "sw" }
 				});
@@ -52,8 +61,14 @@
 		</script>
 	</head>
 	<body>
+	  <div class="ui one column page grid segment">
+			<div class="column">
+				<h1 class="ui header"><i class="chart basic teal icon"></i>MPU6050 Signal Plotting</i></h1>
 
-		<div id="signal-plot" style="width: 1000px; height: 500px"></dev>
+				<div id="signal-plot" class="ui teal segment"></div>
+			</div>
+
+		</div>
 		
 	</body>
 </html>
