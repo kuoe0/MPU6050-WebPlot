@@ -36,6 +36,7 @@ def handler_SIGINT(signum, frame):
     print "Signal {0} happened!".format(signum)
     print "Serial connection closed..."
     ser.close()
+    sys.exit()
 
 signal.signal(signal.SIGINT, handler_SIGINT)
 
