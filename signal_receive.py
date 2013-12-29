@@ -25,7 +25,7 @@ serial_baudrate = int(sys.argv[2])
 ser = serial.Serial(serial_port, serial_baudrate, timeout=1)
 
 # global variable
-number_of_signal = 1000
+number_of_signal = 200
 serial_pending = list()
 signals = [[0] * 6] * number_of_signal
 signal_type = ['x-acc', 'y-acc', 'z-acc', 'x-gyro', 'y-gyro', 'z-gyro']
@@ -112,7 +112,7 @@ application = tornado.web.Application([(r"/", query_signal_handler),])
 if __name__ == "__main__":
 
     #tell tornado to run checkSerial every 50 ms
-    serial_loop = tornado.ioloop.PeriodicCallback(recieve_signal, 10)
+    serial_loop = tornado.ioloop.PeriodicCallback(recieve_signal, 1)
     serial_loop.start()
 
     application.listen(tornado_port)
