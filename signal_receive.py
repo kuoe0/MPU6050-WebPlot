@@ -86,7 +86,10 @@ class query_signal_handler(tornado.web.RequestHandler):
         global signals
         global number_of_signal
         # retrieve signal needed
-        ret_signals = signals[:number_of_signal]
+        ret_signals = signals[:min(number_of_signal, len(signals))]
+        # fill the signal
+        if len(ret_signals) < number_of_signal:
+            ret_signals.extend([[0] * 6] * (number_of_signal - len(ret_signals)))
         # transpose the list
         ret_signals = zip(*ret_signals)
 
@@ -103,8 +106,10 @@ class query_signal_handler(tornado.web.RequestHandler):
         self.set_header("Content-Type", "application/json")
         # write data
         self.write(ret)
-        # remove first element to realtime plot
-        signals.pop(0)
+
+        if len(signals) != 0:
+            # remove first element to realtime plot
+            signals.pop(0)
 
 
 application = tornado.web.Application([(r"/", query_signal_handler),])
