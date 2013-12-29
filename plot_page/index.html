@@ -38,8 +38,9 @@
 
 				var plot = $.plot('#signal-plot', init, {
 					series: { 
-						lines: { show: true },
+						lines: { show: true, lineWidth: 1 },
 						shadowSize: 0 },
+					xaxis: { show: false },
 					yaxis: { min: -36000, max: 36000 },
 					legend: { position: "sw" }
 				});
