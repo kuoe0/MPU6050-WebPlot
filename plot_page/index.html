@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+	<head>
+        <meta charset="utf-8" />
+		<title>MPU6050 Signal Plotting</title>
+		<script language="javascript" type="text/javascript" src="flot/jquery.min.js"></script>
+		<script language="javascript" type="text/javascript" src="flot/jquery.flot.min.js"></script>
+		<script>
+
+			$(function() {
+
+				var number_of_signal = 200;
+				// set update interval in micro second (ms)
+				var updateInterval = 1;
+
+				function update() {
+					var url = 'http://localhost:8888/?callback=?';
+					$.getJSON(url, function(data) {
+						plot.setData(data.data);
+						plot.draw();
+					});
+					setTimeout(update, updateInterval);
+				};
+
+				var signal_type = ['x-acc', 'y-acc', 'z-acc', 'x-gyro', 'y-gyro', 'z-gyro'];
+				var init = [];
+
+				for (var i = 0; i < 6; ++i) {
+					var init_signal = [];
+					for (var j = 0; j < number_of_signal; ++j) {
+						init_signal.push([j, 0]);
+					}
+					init.push({
+						label: signal_type[i],
+						data: init_signal
+					});
+				}
+
+				var plot = $.plot('#signal-plot', init, {
+					series: { 
+						lines: { show: true },
+						shadowSize: 0 },
+					yaxis: { min: -36000, max: 36000 },
+					legend: { position: "sw" }
+				});
+
+				update();
+
+			});
+		
+
+		</script>
+	</head>
+	<body>
+
+		<div id="signal-plot" style="width: 1000px; height: 500px"></dev>
+		
+	</body>
+</html>
+
