@@ -13,6 +13,7 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.web
 import serial
+import signal
 import sys
 import json
 
@@ -21,13 +22,22 @@ tornado_port = 8888
 # create serial object
 serial_port = sys.argv[1]
 serial_baudrate = int(sys.argv[2])
-ser = serial.Serial(serial_port, serial_baudrate)
+ser = serial.Serial(serial_port, serial_baudrate, timeout=1)
 
 # global variable
-number_of_signal = 300
+number_of_signal = 1000
 serial_pending = list()
 signals = [[0] * 6] * number_of_signal
 signal_type = ['x-acc', 'y-acc', 'z-acc', 'x-gyro', 'y-gyro', 'z-gyro']
+
+# SIGINT handler to close serial connection
+def handler_SIGINT(signum, frame):
+    global ser
+    print "Signal {0} happened!".format(signum)
+    print "Serial connection closed..."
+    ser.close()
+
+signal.signal(signal.SIGINT, handler_SIGINT)
 
 # receive signal with a non-blocking way
 def recieve_signal():
@@ -35,6 +45,7 @@ def recieve_signal():
     try:
         if ser.inWaiting() != 0:
             data = ser.readline()
+            print data
     except Exception as e:
         print "Error reading from {0}".format(serial_port)
         template = "An exception of type {0} occured. Arguments:\n{1!r}"
@@ -95,7 +106,7 @@ application = tornado.web.Application([(r"/", query_signal_handler),])
 if __name__ == "__main__":
 
     #tell tornado to run checkSerial every 50 ms
-    serial_loop = tornado.ioloop.PeriodicCallback(recieve_signal, 30)
+    serial_loop = tornado.ioloop.PeriodicCallback(recieve_signal, 10)
     serial_loop.start()
 
     application.listen(tornado_port)
