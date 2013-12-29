@@ -42,15 +42,17 @@ signal.signal(signal.SIGINT, handler_SIGINT)
 # receive signal with a non-blocking way
 def recieve_signal():
 
+    data = ""
     try:
         if ser.inWaiting() != 0:
             data = ser.readline()
             print data
     except Exception as e:
-        print "Error reading from {0}".format(serial_port)
+        error_msg = "Error reading from {0}".format(serial_port)
         template = "An exception of type {0} occured. Arguments:\n{1!r}"
         message = template.format(type(e).__name__, e.args)
-        print message
+
+        print error_msg, message
 
     if len(data):
         parse_pending(data)
@@ -59,11 +61,15 @@ def recieve_signal():
 def parse_pending(signal_string):
 
     global signals
+
+    try:
     # split by ',' and get first element
-    values = [int(x) for x in signal_string.split(',')]
+        values = [int(x) for x in signal_string.split(',')]
+    except:
+        values = None
 
     # push signal into list
-    if len(values) == 6:
+    if values and len(values) == 6:
         signals.append(values)
 
 # tornado web handler
