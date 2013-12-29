@@ -3,7 +3,7 @@ MPU6050-WebPlot
 
 plotting the signal from MPU6050
 
-Latest version: v0.1.1
+Latest version: v0.2
 
 Preview
 -------
@@ -26,11 +26,16 @@ Requirement
 
 **Javascript**
 
-- jQuery
+- jQuery 2.0.3
 - Flot 0.8.2
+- Semantic UI 0.11.0
 
 Changelog
 ----------
+
+**v0.2**
+
+- add signal value tracking feature
 
 **v0.1.1**
 
