@@ -30,6 +30,19 @@ Requirement
 - Flot 0.8.2
 - Semantic UI 0.11.0
 
+Usage
+-----
+
+**For back-end:**
+
+```
+$ ./signal_receive.py [serial port] [baud rate]
+```
+
+**For front-end:**
+
+Just open the index.html in web browser.
+
 Changelog
 ----------
 
