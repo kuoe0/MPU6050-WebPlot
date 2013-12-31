@@ -15,6 +15,8 @@ Usage
 $ ./signal_receive.py [serial port] [baud rate]
 ```
 
+The data format received from deivce is 6 integers separated by comma in one line. For example, `123,456,789,-123,-456,-789`.
+
 **For front-end:**
 
 Just open the index.html in web browser.
@@ -33,28 +35,25 @@ Environment
 Requirement
 -----------
 
-You have to install python packages `pyserial`, `tornado`
-
-```
-pip install pyserial
-pip install tornado
-```
-
 **Python**
 
 - pyserial 2.7
 - tornado 3.1.1
 
-to install javascript package you have to install bower
+```
+$ pip install pyserial
+$ pip install tornado
+```
 
-## prerequisite
+**JavaScript**
 
-- nodejs
+- NodeJS
 - npm
+- bower
 
 ```
-sudo npm install -g bower
-bower install
+$ npm install -g bower
+$ bower install
 ```
 
 
