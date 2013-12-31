@@ -1,6 +1,13 @@
 Changelog
 ----------
 
+**v.03**
+
+- use bower to manage JavaScript packages
+- rearrange the path structure
+- WebSocket communication supported
+
+
 **v0.2**
 
 - add signal value tracking feature
