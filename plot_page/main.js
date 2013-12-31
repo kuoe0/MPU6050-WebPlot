@@ -4,18 +4,22 @@ $(function() {
 	// set update interval in micro second (ms)
 	var updateInterval = 1;
 
-	function update() {
-		var url = 'http://localhost:8888/?callback=?';
-		$.getJSON(url, function(data) {
-			for (var i = 0; i < data.data.length; ++i) {
-				data.data[i].label = data.data[i].label + " = 0";
-			}
-			plot.setData(data.data);
-			plot.draw();
-			uplate_legend();
-		});
-		setTimeout(update, updateInterval);
-	};
+    // Websocket connection
+    var ws = new WebSocket("ws://localhost:8888/ws");
+    ws.onmessage = function (evt) {
+        var data = JSON.parse(evt.data);
+        // append value after each label
+        for (var i = 0; i < data.signal.length; ++i) {
+            data.signal[i].label = data.signal[i].label + " = 0";
+        }
+        // set data for plot
+        plot.setData(data.signal);
+        // redraw graph
+        plot.draw();
+        // uplate legend
+        uplate_legend();
+    };
+
 
 	var signal_type = ['x-acc = 0', 'y-acc = 0', 'z-acc = 0', 'x-gyro = 0', 'y-gyro = 0', 'z-gyro = 0'];
 	var init = [];
@@ -81,6 +85,5 @@ $(function() {
 		}
 	});
 
-	update();
 
 });
