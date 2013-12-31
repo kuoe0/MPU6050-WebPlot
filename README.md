@@ -5,6 +5,20 @@ plotting the signal from MPU6050
 
 Latest version: v0.2
 
+
+Usage
+-----
+
+**For back-end:**
+
+```
+$ ./signal_receive.py [serial port] [baud rate]
+```
+
+**For front-end:**
+
+Just open the index.html in web browser.
+
 Preview
 -------
 
