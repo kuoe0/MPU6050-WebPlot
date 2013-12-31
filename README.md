@@ -5,6 +5,20 @@ plotting the signal from MPU6050
 
 Latest version: v0.2
 
+
+Usage
+-----
+
+**For back-end:**
+
+```
+$ ./signal_receive.py [serial port] [baud rate]
+```
+
+**For front-end:**
+
+Just open the index.html in web browser.
+
 Preview
 -------
 
@@ -19,35 +33,30 @@ Environment
 Requirement
 -----------
 
+You have to install python packages `pyserial`, `tornado`
+
+```
+pip install pyserial
+pip install tornado
+```
+
 **Python**
 
 - pyserial 2.7
 - tornado 3.1.1
 
-**Javascript**
+to install javascript package you have to install bower
 
-- jQuery 2.0.3
-- Flot 0.8.2
-- Semantic UI 0.11.0
+## prerequisite
 
-Changelog
-----------
+- nodejs
+- npm
 
-**v0.2**
+```
+sudo npm install -g bower
+bower install
+```
 
-- add signal value tracking feature
 
-**v0.1.1**
 
-- initial UI design
-
-**v0.1**
-
-- receive 6 signals from MPU6050
-	- X-axis acceleration
-	- Y-axis acceleration
-	- Z-axis acceleration
-	- Roll angle velocity
-	- Pitch angle velocity
-	- Yaw angle velocity
 
