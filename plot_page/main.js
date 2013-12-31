@@ -37,7 +37,7 @@ $(function() {
 
 	var plot = $.plot('#signal-plot', init, {
 		series: { 
-			lines: { show: true, lineWidth: 1 },
+			lines: { show: true, lineWidth: 1.5 },
 			shadowSize: 0 },
 		crosshair: { mode: "x" },
 		grid: { hoverable: true, autoHighlight: false },
