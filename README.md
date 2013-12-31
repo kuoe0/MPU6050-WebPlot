@@ -19,16 +19,30 @@ Environment
 Requirement
 -----------
 
+You have to install python packages `pyserial`, `tornado`
+
+```
+pip install pyserial
+pip install tornado
+```
+
 **Python**
 
 - pyserial 2.7
 - tornado 3.1.1
 
-**Javascript**
+to install javascript package you have to install bower
 
-- jQuery 2.0.3
-- Flot 0.8.2
-- Semantic UI 0.11.0
+## prerequisite
+
+- nodejs
+- npm
+
+```
+sudo npm install -g bower
+bower install
+```
+
 
 Changelog
 ----------
