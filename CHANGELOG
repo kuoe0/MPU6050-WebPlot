@@ -1,7 +1,7 @@
 Changelog
 ----------
 
-**v.03**
+**v0.3**
 
 - use bower to manage JavaScript packages
 - rearrange the path structure
