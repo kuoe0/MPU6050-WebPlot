@@ -81,7 +81,8 @@ def parse_pending(signal_string):
 def signal_tx():
     parse_pending(recieve_signal())
     ret_signal = signal_set[:min(number_of_signal, len(signal_set))]
-    signal_set.pop(0)
+    if len(signal_set):
+        signal_set.pop(0)
 
     # fill the signal
     if len(ret_signal) < number_of_signal:
@@ -109,7 +110,6 @@ application = tornado.web.Application([
     ])
 
 if __name__ == "__main__":
-
     #tell tornado to run signal_tx every 1 ms
     serial_loop = tornado.ioloop.PeriodicCallback(signal_tx, 1)
     serial_loop.start()
