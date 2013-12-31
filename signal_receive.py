@@ -12,6 +12,7 @@
 import tornado.httpserver
 import tornado.ioloop
 import tornado.web
+import tornado.websocket
 import serial
 import signal
 import sys
@@ -25,9 +26,10 @@ serial_baudrate = int(sys.argv[2])
 ser = serial.Serial(serial_port, serial_baudrate, timeout=1)
 
 # global variable
+client = list() # list of websocket client
 number_of_signal = 200
 serial_pending = list()
-signals = [[0] * 6] * number_of_signal
+signal_set = [[0] * 6] * number_of_signal
 signal_type = ['x-acc', 'y-acc', 'z-acc', 'x-gyro', 'y-gyro', 'z-gyro']
 
 # SIGINT handler to close serial connection
@@ -36,6 +38,7 @@ def handler_SIGINT(signum, frame):
     print "Signal {0} happened!".format(signum)
     print "Serial connection closed..."
     ser.close()
+    sys.exit()
 
 signal.signal(signal.SIGINT, handler_SIGINT)
 
@@ -54,13 +57,15 @@ def recieve_signal():
 
         print error_msg, message
 
-    if len(data):
-        parse_pending(data)
+    return data
 
 # parse out the signal value
 def parse_pending(signal_string):
 
-    global signals
+    if len(signal_string) == 0:
+        return
+
+    global signal_set
 
     try:
     # split by ',' and get first element
@@ -70,54 +75,43 @@ def parse_pending(signal_string):
 
     # push signal into list
     if values and len(values) == 6:
-        signals.append(values)
+        signal_set.append(values)
 
-# tornado web handler
-class query_signal_handler(tornado.web.RequestHandler):
+# push signal data to client
+def signal_tx():
+    parse_pending(recieve_signal())
+    ret_signal = signal_set[:min(number_of_signal, len(signal_set))]
+    signal_set.pop(0)
 
-    def get(self, url='/'):
-        print 'get'
-        # get the name of callback parameter
-        callback_func = self.get_argument('callback')
-        self.handle_request(callback_func)
+    # fill the signal
+    if len(ret_signal) < number_of_signal:
+        ret_signal.extend([[0] * 6] * (number_of_signal - len(ret_signal)))
+    # transpose the list
+    ret_signal = zip(*ret_signal)
+
+    ret = list()
+    for i in xrange(6):
+        ret.append({ 'data': [p for p in enumerate(ret_signal[i])], 'label': signal_type[i] })
+    ret = json.dumps({ 'signal': ret })
     
-    # return signals
-    def handle_request(self, callback):
-        global signals
-        global number_of_signal
-        # retrieve signal needed
-        ret_signals = signals[:min(number_of_signal, len(signals))]
-        # fill the signal
-        if len(ret_signals) < number_of_signal:
-            ret_signals.extend([[0] * 6] * (number_of_signal - len(ret_signals)))
-        # transpose the list
-        ret_signals = zip(*ret_signals)
+    for cl in client:
+        cl.write_message(ret)
 
-        # create list of dict
-        ret = list()
-        for i in xrange(6):
-            ret.append({ 'data': [p for p in enumerate(ret_signals[i])], 'label': signal_type[i] })
+# tornado websocket handler
+class socket_handler(tornado.websocket.WebSocketHandler):
+    def open(self):
+        client.append(self)
+    def on_close(self):
+        client.remove(self)
 
-        # convert to JSON format
-        ret = json.dumps({'data': ret})
-        # convert to JSONP format
-        ret = '{0}({1})'.format(callback, ret)
-        # set content type
-        self.set_header("Content-Type", "application/json")
-        # write data
-        self.write(ret)
-
-        if len(signals) != 0:
-            # remove first element to realtime plot
-            signals.pop(0)
-
-
-application = tornado.web.Application([(r"/", query_signal_handler),])
+application = tornado.web.Application([
+    (r"/ws", socket_handler),
+    ])
 
 if __name__ == "__main__":
 
-    #tell tornado to run checkSerial every 50 ms
-    serial_loop = tornado.ioloop.PeriodicCallback(recieve_signal, 1)
+    #tell tornado to run signal_tx every 1 ms
+    serial_loop = tornado.ioloop.PeriodicCallback(signal_tx, 1)
     serial_loop.start()
 
     application.listen(tornado_port)
