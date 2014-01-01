@@ -105,8 +105,13 @@ class socket_handler(tornado.websocket.WebSocketHandler):
     def on_close(self):
         client.remove(self)
 
+class homepage_handler(tornado.web.RequestHandler):
+    def get(self):
+        self.render('template/index.html')
+
 application = tornado.web.Application([
-    (r"/ws", socket_handler),
+    (r'/', homepage_handler),
+    (r'/ws', socket_handler),
     ])
 
 if __name__ == "__main__":
