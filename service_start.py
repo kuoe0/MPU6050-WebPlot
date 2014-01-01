@@ -17,6 +17,7 @@ import serial
 import signal
 import sys
 import json
+import os
 
 tornado_port = 8888
 
@@ -109,10 +110,14 @@ class homepage_handler(tornado.web.RequestHandler):
     def get(self):
         self.render('template/index.html')
 
+settings = {
+    'static_path': os.path.join(os.path.dirname(__file__), 'static'),
+}
+
 application = tornado.web.Application([
     (r'/', homepage_handler),
     (r'/ws', socket_handler),
-    ])
+    ], **settings)
 
 if __name__ == "__main__":
     #tell tornado to run signal_tx every 1 ms
