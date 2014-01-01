@@ -12,14 +12,14 @@ Usage
 **For back-end:**
 
 ```
-$ ./signal_receive.py [serial port] [baud rate]
+$ ./service_start.py [serial port] [baud rate]
 ```
 
 The data format received from deivce is 6 integers separated by comma in one line. For example, `123,456,789,-123,-456,-789`.
 
 **For front-end:**
 
-Just open the index.html in web browser.
+Connect to [http://localhost:8888/](http://localhost:8888) in web browser.
 
 Preview
 -------
