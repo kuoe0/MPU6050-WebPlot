@@ -1,6 +1,10 @@
 Changelog
 ----------
 
+**0.3.2**
+
+- add homepage handler in service
+
 **v0.3**
 
 - use bower to manage JavaScript packages
