@@ -10,6 +10,7 @@ $(function() {
 	}
 
 
+	var clear_status = false;
 	var number_of_signal = 200;
 	var connection_status = false;
 	var plot = null;
@@ -35,15 +36,12 @@ $(function() {
     ws.onmessage = function (evt) {
 
 		if (plot == null) {
-
 			var data = JSON.parse(evt.data);
 			data = get_series_data(data);
-			console.log(data);
 			init_draw(data);
-
 		}
 
-		if (!connection_status) {
+		if (!connection_status && !clear_status) {
 			return;
 		}
 
@@ -55,6 +53,8 @@ $(function() {
 		plot.draw();
 		// uplate legend
 		uplate_legend();
+
+		clear_status = false;
 	};
 
 	var legends = $('#signal-plot .legendLabel');
@@ -94,6 +94,11 @@ $(function() {
 		if (!update_legend_timeout) {
 			update_legend_timeout = setTimeout(uplate_legend, 50);
 		}
+	});
+
+	$('#clear-btn').click(function () {
+		ws.send("clear");
+		clear_status = true;
 	});
 
 	$('#status-btn').click(function () {
