@@ -1,52 +1,61 @@
 $(function() {
 
+	function get_series_data(data) {
+		// append value after each label
+		for (var i = 0; i < data.signal.length; ++i) {
+			data.signal[i].label = data.signal[i].label + " = 0";
+		}
+
+		return data.signal;
+	}
+
+
 	var number_of_signal = 200;
 	var connection_status = false;
+	var plot = null;
+
+	function init_draw(data) {
+
+		plot = $.plot('#signal-plot', data, {
+			series: { 
+				lines: { show: true, lineWidth: 1.5 },
+				shadowSize: 0 },
+			crosshair: { mode: "x" },
+			grid: { hoverable: true, autoHighlight: false },
+			xaxis: { show: false },
+			yaxis: { min: -36000, max: 36000 },
+			legend: { position: "sw" }
+		});
+
+	}
 
     // Websocket connection
     var ws = new WebSocket("ws://localhost:8888/ws");
+
     ws.onmessage = function (evt) {
+
+		if (plot == null) {
+
+			var data = JSON.parse(evt.data);
+			data = get_series_data(data);
+			console.log(data);
+			init_draw(data);
+
+		}
+
 		if (!connection_status) {
 			return;
 		}
 
-        var data = JSON.parse(evt.data);
-        // append value after each label
-        for (var i = 0; i < data.signal.length; ++i) {
-            data.signal[i].label = data.signal[i].label + " = 0";
-        }
-        // set data for plot
-        plot.setData(data.signal);
-        // redraw graph
-        plot.draw();
-        // uplate legend
-        uplate_legend();
-    };
-
-	var signal_type = ['x-acc = 0', 'y-acc = 0', 'z-acc = 0', 'x-gyro = 0', 'y-gyro = 0', 'z-gyro = 0'];
-	var init = [];
-
-	for (var i = 0; i < 6; ++i) {
-		var init_signal = [];
-		for (var j = 0; j < number_of_signal; ++j) {
-			init_signal.push([j, 0]);
-		}
-		init.push({
-			label: signal_type[i],
-			data: init_signal
-		});
-	}
-
-	var plot = $.plot('#signal-plot', init, {
-		series: { 
-			lines: { show: true, lineWidth: 1.5 },
-			shadowSize: 0 },
-		crosshair: { mode: "x" },
-		grid: { hoverable: true, autoHighlight: false },
-		xaxis: { show: false },
-		yaxis: { min: -36000, max: 36000 },
-		legend: { position: "sw" }
-	});
+		var data = JSON.parse(evt.data);
+		data = get_series_data(data);
+		// set data for plot
+		plot.setData(data);
+		// redraw graph
+		plot.draw();
+		// uplate legend
+		uplate_legend();
+	};
 
 	var legends = $('#signal-plot .legendLabel');
 
