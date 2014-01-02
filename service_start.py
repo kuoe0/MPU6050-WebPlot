@@ -30,6 +30,7 @@ ser = serial.Serial(serial_port, serial_baudrate, timeout=1)
 client = list() # list of websocket client
 number_of_signal = 200
 serial_pending = list()
+tx_status = False
 signal_set = [[0] * 6] * number_of_signal
 signal_type = ['x-acc', 'y-acc', 'z-acc', 'x-gyro', 'y-gyro', 'z-gyro']
 
@@ -79,7 +80,14 @@ def parse_pending(signal_string):
 
 # push signal data to client
 def signal_tx():
+
+    global tx_status
+
     parse_pending(recieve_signal())
+
+    if not tx_status:
+        return
+
     ret_signal = signal_set[:min(number_of_signal, len(signal_set))]
     if len(signal_set):
         signal_set.pop(0)
@@ -112,6 +120,15 @@ class socket_handler(tornado.websocket.WebSocketHandler):
         ret = json.dumps({ 'signal': ret })
 
         self.write_message(ret)
+
+    def on_message(self, message):
+        global tx_status
+
+        if message == "play":
+            tx_status = True
+        elif message == "pause":
+            tx_status = False
+
 
     def on_close(self):
         client.remove(self)
