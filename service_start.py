@@ -50,7 +50,6 @@ def recieve_signal():
     try:
         if ser.inWaiting() != 0:
             data = ser.readline()
-            print data
     except Exception as e:
         error_msg = "Error reading from {0}".format(serial_port)
         template = "An exception of type {0} occured. Arguments:\n{1!r}"
@@ -103,6 +102,17 @@ def signal_tx():
 class socket_handler(tornado.websocket.WebSocketHandler):
     def open(self):
         client.append(self)
+
+        ret_signal = [[0] * 6] * number_of_signal
+        ret_signal = zip(*ret_signal)
+
+        ret = list()
+        for label in signal_type:
+            ret.append({ 'data': [p for p in enumerate([0] * number_of_signal)], 'label': label })
+        ret = json.dumps({ 'signal': ret })
+
+        self.write_message(ret)
+
     def on_close(self):
         client.remove(self)
 
