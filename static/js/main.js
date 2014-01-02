@@ -103,6 +103,7 @@ $(function() {
 			$(this).empty();
 			$(this).append("<i class='play icon'></i>");
 			connection_status = false;
+			ws.send("pause");
 		}
 		// open connection
 		else {
@@ -110,6 +111,7 @@ $(function() {
 			$(this).empty();
 			$(this).append("<i class='pause icon'></i>");
 			connection_status = true;
+			ws.send("play");
 		}
 	});
 
