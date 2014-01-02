@@ -1,7 +1,12 @@
 Changelog
 ----------
 
-**0.3.2**
+**v0.4**
+
+- add button to start/pause/continue signal capture
+- add button to clear all signal
+
+**v0.3.2**
 
 - add homepage handler in service
 
