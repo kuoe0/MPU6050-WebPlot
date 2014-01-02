@@ -85,5 +85,18 @@ $(function() {
 		}
 	});
 
+	$('#status-btn').click(function () {
+		if ($(this).hasClass('active')) {
+			$(this).removeClass('active');
+			$(this).empty();
+			$(this).append("<i class='play icon'></i>");
+		}
+		else {
+			$(this).addClass('active');
+			$(this).empty();
+			$(this).append("<i class='pause icon'></i>");
+		}
+	});
+
 
 });
