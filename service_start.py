@@ -30,6 +30,7 @@ ser = serial.Serial(serial_port, serial_baudrate, timeout=1)
 client = list() # list of websocket client
 number_of_signal = 200
 serial_pending = list()
+tx_status = False
 signal_set = [[0] * 6] * number_of_signal
 signal_type = ['x-acc', 'y-acc', 'z-acc', 'x-gyro', 'y-gyro', 'z-gyro']
 
@@ -50,7 +51,6 @@ def recieve_signal():
     try:
         if ser.inWaiting() != 0:
             data = ser.readline()
-            print data
     except Exception as e:
         error_msg = "Error reading from {0}".format(serial_port)
         template = "An exception of type {0} occured. Arguments:\n{1!r}"
@@ -80,7 +80,14 @@ def parse_pending(signal_string):
 
 # push signal data to client
 def signal_tx():
+
+    global tx_status
+
     parse_pending(recieve_signal())
+
+    if not tx_status:
+        return
+
     ret_signal = signal_set[:min(number_of_signal, len(signal_set))]
     if len(signal_set):
         signal_set.pop(0)
@@ -99,10 +106,37 @@ def signal_tx():
     for cl in client:
         cl.write_message(ret)
 
+def make_init_data():
+    
+    ret_signal = [[0] * 6] * number_of_signal
+    ret_signal = zip(*ret_signal)
+
+    ret = list()
+    for label in signal_type:
+        ret.append({ 'data': [p for p in enumerate([0] * number_of_signal)], 'label': label })
+    ret = json.dumps({ 'signal': ret })
+
+    return ret
+
+
 # tornado websocket handler
 class socket_handler(tornado.websocket.WebSocketHandler):
     def open(self):
         client.append(self)
+        self.write_message(make_init_data())
+
+    def on_message(self, message):
+        global tx_status
+        global signal_set
+
+        if message == "play":
+            tx_status = True
+        elif message == "pause":
+            tx_status = False
+        elif message == "clear":
+            signal_set = [[0] * 6] * number_of_signal
+            self.write_message(make_init_data())
+
     def on_close(self):
         client.remove(self)
 
