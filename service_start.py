@@ -106,29 +106,36 @@ def signal_tx():
     for cl in client:
         cl.write_message(ret)
 
+def make_init_data():
+    
+    ret_signal = [[0] * 6] * number_of_signal
+    ret_signal = zip(*ret_signal)
+
+    ret = list()
+    for label in signal_type:
+        ret.append({ 'data': [p for p in enumerate([0] * number_of_signal)], 'label': label })
+    ret = json.dumps({ 'signal': ret })
+
+    return ret
+
+
 # tornado websocket handler
 class socket_handler(tornado.websocket.WebSocketHandler):
     def open(self):
         client.append(self)
-
-        ret_signal = [[0] * 6] * number_of_signal
-        ret_signal = zip(*ret_signal)
-
-        ret = list()
-        for label in signal_type:
-            ret.append({ 'data': [p for p in enumerate([0] * number_of_signal)], 'label': label })
-        ret = json.dumps({ 'signal': ret })
-
-        self.write_message(ret)
+        self.write_message(make_init_data())
 
     def on_message(self, message):
         global tx_status
+        global signal_set
 
         if message == "play":
             tx_status = True
         elif message == "pause":
             tx_status = False
-
+        elif message == "clear":
+            signal_set = [[0] * 6] * number_of_signal
+            self.write_message(make_init_data())
 
     def on_close(self):
         client.remove(self)
