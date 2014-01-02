@@ -1,12 +1,15 @@
 $(function() {
 
 	var number_of_signal = 200;
-	// set update interval in micro second (ms)
-	var updateInterval = 1;
+	var connection_status = false;
 
     // Websocket connection
     var ws = new WebSocket("ws://localhost:8888/ws");
     ws.onmessage = function (evt) {
+		if (!connection_status) {
+			return;
+		}
+
         var data = JSON.parse(evt.data);
         // append value after each label
         for (var i = 0; i < data.signal.length; ++i) {
@@ -19,7 +22,6 @@ $(function() {
         // uplate legend
         uplate_legend();
     };
-
 
 	var signal_type = ['x-acc = 0', 'y-acc = 0', 'z-acc = 0', 'x-gyro = 0', 'y-gyro = 0', 'z-gyro = 0'];
 	var init = [];
@@ -86,15 +88,19 @@ $(function() {
 	});
 
 	$('#status-btn').click(function () {
+		// close connection
 		if ($(this).hasClass('active')) {
 			$(this).removeClass('active');
 			$(this).empty();
 			$(this).append("<i class='play icon'></i>");
+			connection_status = false;
 		}
+		// open connection
 		else {
 			$(this).addClass('active');
 			$(this).empty();
 			$(this).append("<i class='pause icon'></i>");
+			connection_status = true;
 		}
 	});
 
