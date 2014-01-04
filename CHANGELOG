@@ -1,6 +1,10 @@
 Changelog
 ----------
 
+**v0.5**
+
+- add button to apply moving average filter
+
 **v0.4**
 
 - add button to start/pause/continue signal capture
