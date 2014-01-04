@@ -5,7 +5,6 @@ plotting the signal from MPU6050
 
 Latest version: v0.5
 
-
 Usage
 -----
 
