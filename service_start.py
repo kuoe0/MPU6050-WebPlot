@@ -18,6 +18,7 @@ import signal
 import sys
 import json
 import os
+import copy
 
 tornado_port = 8888
 
@@ -31,7 +32,9 @@ client = list() # list of websocket client
 number_of_signal = 200
 serial_pending = list()
 tx_status = False
+level_moving_average = 0
 signal_set = [[0] * 6] * number_of_signal
+last_signal_set = [[0] * 6] * number_of_signal
 signal_type = ['x-acc', 'y-acc', 'z-acc', 'x-gyro', 'y-gyro', 'z-gyro']
 
 # SIGINT handler to close serial connection
@@ -78,33 +81,11 @@ def parse_pending(signal_string):
     if values and len(values) == 6:
         signal_set.append(values)
 
-# push signal data to client
-def signal_tx():
-
-    global tx_status
-
-    parse_pending(recieve_signal())
-
-    if not tx_status:
-        return
-
-    ret_signal = signal_set[:min(number_of_signal, len(signal_set))]
-    if len(signal_set):
-        signal_set.pop(0)
-
-    # fill the signal
-    if len(ret_signal) < number_of_signal:
-        ret_signal.extend([[0] * 6] * (number_of_signal - len(ret_signal)))
-    # transpose the list
-    ret_signal = zip(*ret_signal)
-
-    ret = list()
-    for i in xrange(6):
-        ret.append({ 'data': [p for p in enumerate(ret_signal[i])], 'label': signal_type[i] })
-    ret = json.dumps({ 'signal': ret })
+def moving_average_filter(last_signal, signal, level):
     
-    for cl in client:
-        cl.write_message(ret)
+    signal = ([0] * (level - len(last_signal))) + list(last_signal) + list(signal)
+    ret = [float(sum(signal[idx:idx + level])) / level for idx in xrange(len(signal) - level + 1)]
+    return ret
 
 def make_init_data():
     
@@ -119,6 +100,58 @@ def make_init_data():
     return ret
 
 
+def make_data():
+
+    global signal_set
+    global signal_type
+    global last_signal_set
+    global number_of_signal
+    global level_moving_average
+
+    # take out the signal to return
+    signals = signal_set[:min(number_of_signal, len(signal_set))]
+    last_signals = last_signal_set[:min(level_moving_average, len(last_signal_set))]
+
+    # pop out the transmitted signal
+    if len(signal_set):
+        last_signal_set.append(signal_set.pop(0))
+        last_signal_set = last_signal_set[-number_of_signal:]
+
+    # fill the signal
+    if len(signals) < number_of_signal:
+        signals.extend([[0] * 6] * (number_of_signal - len(signals)))
+
+    # transpose signals to make the signal of same type in same list
+    signals = zip(*signals)
+    last_signals = zip(*last_signals)
+
+    ret = list()
+
+    for i in xrange(6):
+        if level_moving_average != 0:
+            signals[i] = moving_average_filter(last_signals[i], signals[i], level_moving_average)
+        ret.append({ 'data': [p for p in enumerate(signals[i])], 'label': signal_type[i] })
+    ret = json.dumps({ 'signal': ret })
+    return ret
+
+# push signal data to client
+def signal_tx():
+
+    global last_signal_set
+    global signal_set
+    global tx_status
+    global level_moving_average
+
+    parse_pending(recieve_signal())
+
+    if not tx_status:
+        return
+    
+    ret = make_data()
+    for cl in client:
+        cl.write_message(ret)
+
+
 # tornado websocket handler
 class socket_handler(tornado.websocket.WebSocketHandler):
     def open(self):
@@ -128,14 +161,21 @@ class socket_handler(tornado.websocket.WebSocketHandler):
     def on_message(self, message):
         global tx_status
         global signal_set
+        global toggle_moving_average_filter
+        global level_moving_average
 
-        if message == "play":
+        token = message.split()
+
+        if token[0] == "play":
             tx_status = True
-        elif message == "pause":
+        elif token[0] == "pause":
             tx_status = False
-        elif message == "clear":
+        elif token[0] == "clear":
             signal_set = [[0] * 6] * number_of_signal
             self.write_message(make_init_data())
+        elif token[0] == "MAF":
+            level_moving_average = int(token[1])
+            self.write_message(make_data())
 
     def on_close(self):
         client.remove(self)

@@ -10,9 +10,8 @@ $(function() {
 	}
 
 
-	var clear_status = false;
 	var number_of_signal = 200;
-	var connection_status = false;
+	var moving_average_status = false;
 	var plot = null;
 
 	function init_draw(data) {
@@ -41,10 +40,6 @@ $(function() {
 			init_draw(data);
 		}
 
-		if (!connection_status && !clear_status) {
-			return;
-		}
-
 		var data = JSON.parse(evt.data);
 		data = get_series_data(data);
 		// set data for plot
@@ -52,9 +47,8 @@ $(function() {
 		// redraw graph
 		plot.draw();
 		// uplate legend
-		uplate_legend();
+		update_legend();
 
-		clear_status = false;
 	};
 
 	var legends = $('#signal-plot .legendLabel');
@@ -62,7 +56,7 @@ $(function() {
 	var latest_pos = null;
 	var update_legend_timeout = null;
 
-	function uplate_legend() {
+	function update_legend() {
 		update_legend_timeout = null;
 		var pos = latest_pos;
 
@@ -92,13 +86,12 @@ $(function() {
 	$('#signal-plot').bind("plothover", function (event, pos, iten) {
 		latest_pos = pos;
 		if (!update_legend_timeout) {
-			update_legend_timeout = setTimeout(uplate_legend, 50);
+			update_legend_timeout = setTimeout(update_legend, 50);
 		}
 	});
 
 	$('#clear-btn').click(function () {
 		ws.send("clear");
-		clear_status = true;
 	});
 
 	$('#status-btn').click(function () {
@@ -107,7 +100,6 @@ $(function() {
 			$(this).removeClass('active');
 			$(this).empty();
 			$(this).append("<i class='play icon'></i>");
-			connection_status = false;
 			ws.send("pause");
 		}
 		// open connection
@@ -115,8 +107,20 @@ $(function() {
 			$(this).addClass('active');
 			$(this).empty();
 			$(this).append("<i class='pause icon'></i>");
-			connection_status = true;
 			ws.send("play");
+		}
+	});
+
+	$('#moving-average-filter').click(function () {
+		if ($(this).hasClass('active')) {
+			$(this).removeClass('active');
+			moving_average_status = false;
+			ws.send("MAF 0");
+		}
+		else {
+			$(this).addClass('active');
+			moving_average_status = true;
+			ws.send("MAF 10");
 		}
 	});
 
