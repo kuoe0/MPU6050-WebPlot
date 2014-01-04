@@ -47,7 +47,7 @@ $(function() {
 		// redraw graph
 		plot.draw();
 		// uplate legend
-		uplate_legend();
+		update_legend();
 
 	};
 
@@ -56,7 +56,7 @@ $(function() {
 	var latest_pos = null;
 	var update_legend_timeout = null;
 
-	function uplate_legend() {
+	function update_legend() {
 		update_legend_timeout = null;
 		var pos = latest_pos;
 
@@ -86,7 +86,7 @@ $(function() {
 	$('#signal-plot').bind("plothover", function (event, pos, iten) {
 		latest_pos = pos;
 		if (!update_legend_timeout) {
-			update_legend_timeout = setTimeout(uplate_legend, 50);
+			update_legend_timeout = setTimeout(update_legend, 50);
 		}
 	});
 
