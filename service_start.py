@@ -112,11 +112,6 @@ def make_data():
     signals = signal_set[:min(number_of_signal, len(signal_set))]
     last_signals = last_signal_set[:min(level_moving_average, len(last_signal_set))]
 
-    # pop out the transmitted signal
-    if len(signal_set):
-        last_signal_set.append(signal_set.pop(0))
-        last_signal_set = last_signal_set[-number_of_signal:]
-
     # fill the signal
     if len(signals) < number_of_signal:
         signals.extend([[0] * 6] * (number_of_signal - len(signals)))
@@ -137,16 +132,21 @@ def make_data():
 # push signal data to client
 def signal_tx():
 
-    global last_signal_set
-    global signal_set
     global tx_status
-    global level_moving_average
+    global number_of_signal
+    global signal_set
+    global last_signal_set
 
     parse_pending(recieve_signal())
 
     if not tx_status:
         return
     
+    # pop out the transmitted signal
+    if len(signal_set):
+        last_signal_set.append(signal_set.pop(0))
+        last_signal_set = last_signal_set[-number_of_signal:]
+
     ret = make_data()
     for cl in client:
         cl.write_message(ret)
