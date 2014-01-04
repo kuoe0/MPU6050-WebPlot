@@ -13,6 +13,7 @@ $(function() {
 	var clear_status = false;
 	var number_of_signal = 200;
 	var connection_status = false;
+	var moving_average_status = false;
 	var plot = null;
 
 	function init_draw(data) {
@@ -117,6 +118,17 @@ $(function() {
 			$(this).append("<i class='pause icon'></i>");
 			connection_status = true;
 			ws.send("play");
+		}
+	});
+
+	$('#moving-average-filter').click(function () {
+		if ($(this).hasClass('active')) {
+			$(this).removeClass('active');
+			moving_average_status = false;
+		}
+		else {
+			$(this).addClass('active');
+			moving_average_status = true;
 		}
 	});
 
