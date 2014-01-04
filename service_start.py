@@ -195,7 +195,7 @@ application = tornado.web.Application([
 
 if __name__ == "__main__":
     #tell tornado to run signal_tx every 1 ms
-    serial_loop = tornado.ioloop.PeriodicCallback(signal_tx, 100)
+    serial_loop = tornado.ioloop.PeriodicCallback(signal_tx, 1)
     serial_loop.start()
 
     application.listen(tornado_port)
