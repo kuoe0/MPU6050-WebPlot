@@ -125,10 +125,12 @@ $(function() {
 		if ($(this).hasClass('active')) {
 			$(this).removeClass('active');
 			moving_average_status = false;
+			ws.send("MAF 0");
 		}
 		else {
 			$(this).addClass('active');
 			moving_average_status = true;
+			ws.send("MAF 10");
 		}
 	});
 
