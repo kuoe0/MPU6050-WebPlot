@@ -10,9 +10,7 @@ $(function() {
 	}
 
 
-	var clear_status = false;
 	var number_of_signal = 200;
-	var connection_status = false;
 	var moving_average_status = false;
 	var plot = null;
 
@@ -42,10 +40,6 @@ $(function() {
 			init_draw(data);
 		}
 
-		if (!connection_status && !clear_status) {
-			return;
-		}
-
 		var data = JSON.parse(evt.data);
 		data = get_series_data(data);
 		// set data for plot
@@ -55,7 +49,6 @@ $(function() {
 		// uplate legend
 		uplate_legend();
 
-		clear_status = false;
 	};
 
 	var legends = $('#signal-plot .legendLabel');
@@ -99,7 +92,6 @@ $(function() {
 
 	$('#clear-btn').click(function () {
 		ws.send("clear");
-		clear_status = true;
 	});
 
 	$('#status-btn').click(function () {
@@ -108,7 +100,6 @@ $(function() {
 			$(this).removeClass('active');
 			$(this).empty();
 			$(this).append("<i class='play icon'></i>");
-			connection_status = false;
 			ws.send("pause");
 		}
 		// open connection
@@ -116,7 +107,6 @@ $(function() {
 			$(this).addClass('active');
 			$(this).empty();
 			$(this).append("<i class='pause icon'></i>");
-			connection_status = true;
 			ws.send("play");
 		}
 	});
