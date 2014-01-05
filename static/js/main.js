@@ -1,3 +1,16 @@
+var ws = undefined;
+
+function update_MA(value) {
+    if (value != '') {
+        $('#moving-average-filter label').text('MA Filter (' + value + ')');
+        $('#MA-slider').val(value);
+        ws.send("MAF " + value);
+    }
+    else {
+        $('#moving-average-filter label').text('MA Filter');
+    }
+}
+
 $(function() {
 
 	function get_series_data(data) {
@@ -9,9 +22,7 @@ $(function() {
 		return data.signal;
 	}
 
-
 	var number_of_signal = 200;
-	var moving_average_status = false;
 	var plot = null;
 
 	function init_draw(data) {
@@ -30,7 +41,7 @@ $(function() {
 	}
 
     // Websocket connection
-    var ws = new WebSocket("ws://localhost:8888/ws");
+    ws = new WebSocket("ws://localhost:8888/ws");
 
     ws.onmessage = function (evt) {
 
@@ -114,15 +125,18 @@ $(function() {
 	$('#moving-average-filter').click(function () {
 		if ($(this).hasClass('active')) {
 			$(this).removeClass('active');
-			moving_average_status = false;
+            $('#MA-slider').attr('disabled', true);
+            update_MA('');
 			ws.send("MAF 0");
 		}
 		else {
 			$(this).addClass('active');
-			moving_average_status = true;
-			ws.send("MAF 10");
+            update_MA($('#MA-slider').val());
+            $('#MA-slider').attr('disabled', false);
 		}
 	});
+
+    $('.ui.checkbox').checkbox();
 
 
 });
