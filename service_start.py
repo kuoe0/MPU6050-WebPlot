@@ -25,6 +25,7 @@ tornado_port = 8888
 # create serial object
 serial_port = sys.argv[1]
 serial_baudrate = int(sys.argv[2])
+callback_timeout = int(sys.argv[3])
 ser = serial.Serial(serial_port, serial_baudrate, timeout=1)
 
 # global variable
@@ -195,7 +196,7 @@ application = tornado.web.Application([
 
 if __name__ == "__main__":
     #tell tornado to run signal_tx every 1 ms
-    serial_loop = tornado.ioloop.PeriodicCallback(signal_tx, 1)
+    serial_loop = tornado.ioloop.PeriodicCallback(signal_tx, callback_timeout)
     serial_loop.start()
 
     application.listen(tornado_port)
