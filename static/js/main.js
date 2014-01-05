@@ -24,6 +24,7 @@ $(function() {
 
 	var number_of_signal = 200;
 	var plot = null;
+	var legends = null;
 
 	function init_draw(data) {
 
@@ -37,6 +38,8 @@ $(function() {
 			yaxis: { min: -36000, max: 36000 },
 			legend: { position: "sw" }
 		});
+
+		legends = $('#signal-plot .legendLabel');
 
 	}
 
@@ -62,13 +65,18 @@ $(function() {
 
 	};
 
-	var legends = $('#signal-plot .legendLabel');
 
 	var latest_pos = null;
 	var update_legend_timeout = null;
 
 	function update_legend() {
+
+		if (latest_pos == null) {
+			return;
+		}
+
 		update_legend_timeout = null;
+
 		var pos = latest_pos;
 
 		var axes = plot.getAxes();
