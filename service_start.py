@@ -13,12 +13,12 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.web
 import tornado.websocket
+import numpy as np
 import serial
 import signal
 import sys
 import json
 import os
-import copy
 
 tornado_port = 8888
 
@@ -33,7 +33,7 @@ client = list() # list of websocket client
 number_of_signal = 200
 serial_pending = list()
 tx_status = False
-level_moving_average = 0
+size_window_MA = 0
 signal_set = [[0] * 6] * number_of_signal
 last_signal_set = [[0] * 6] * number_of_signal
 signal_type = ['x-acc', 'y-acc', 'z-acc', 'x-gyro', 'y-gyro', 'z-gyro']
@@ -82,11 +82,10 @@ def parse_pending(signal_string):
     if values and len(values) == 6:
         signal_set.append(values)
 
-def moving_average_filter(last_signal, signal, level):
+def moving_average_filter(last_signal, signal, size_window):
     
-    signal = ([0] * (level - len(last_signal))) + list(last_signal) + list(signal)
-    ret = [float(sum(signal[idx:idx + level])) / level for idx in xrange(len(signal) - level + 1)]
-    return ret
+    signal = ([0] * ((size_window - 1) - len(last_signal))) + list(last_signal) + list(signal)
+    return list(np.convolve(signal, [1.0 / size_window] * size_window, 'valid'))
 
 def make_init_data():
     
@@ -107,11 +106,11 @@ def make_data():
     global signal_type
     global last_signal_set
     global number_of_signal
-    global level_moving_average
+    global size_window_MA
 
     # take out the signal to return
     signals = signal_set[:min(number_of_signal, len(signal_set))]
-    last_signals = last_signal_set[-(min(level_moving_average, len(last_signal_set))):]
+    last_signals = last_signal_set[-(min(size_window_MA - 1, len(last_signal_set))):]
 
     # fill the signal
     if len(signals) < number_of_signal:
@@ -124,8 +123,8 @@ def make_data():
     ret = list()
 
     for i in xrange(6):
-        if level_moving_average != 0:
-            signals[i] = moving_average_filter(last_signals[i], signals[i], level_moving_average)
+        if size_window_MA != 0:
+            signals[i] = moving_average_filter(last_signals[i], signals[i], size_window_MA)
         ret.append({ 'data': [p for p in enumerate(signals[i])], 'label': signal_type[i] })
     ret = json.dumps({ 'signal': ret })
     return ret
@@ -163,7 +162,7 @@ class socket_handler(tornado.websocket.WebSocketHandler):
         global tx_status
         global signal_set
         global toggle_moving_average_filter
-        global level_moving_average
+        global size_window_MA
 
         token = message.split()
 
@@ -175,7 +174,7 @@ class socket_handler(tornado.websocket.WebSocketHandler):
             signal_set = [[0] * 6] * number_of_signal
             self.write_message(make_init_data())
         elif token[0] == "MAF":
-            level_moving_average = int(token[1])
+            size_window_MA = int(token[1])
             self.write_message(make_data())
 
     def on_close(self):
