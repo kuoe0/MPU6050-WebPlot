@@ -111,7 +111,7 @@ def make_data():
 
     # take out the signal to return
     signals = signal_set[:min(number_of_signal, len(signal_set))]
-    last_signals = last_signal_set[:min(level_moving_average, len(last_signal_set))]
+    last_signals = last_signal_set[-(min(level_moving_average, len(last_signal_set))):]
 
     # fill the signal
     if len(signals) < number_of_signal:
