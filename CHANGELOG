@@ -1,6 +1,15 @@
 Changelog
 ----------
 
+**v0.5.2**
+
+- add parameter to change the timeout of polling  
+- fix the error result of moving average filter
+- add dynamic window size control of moving average filter
+- redesign the UI
+	- add two control panel
+	- reduce the height of plotting graph
+
 **v0.5**
 
 - add button to apply moving average filter
