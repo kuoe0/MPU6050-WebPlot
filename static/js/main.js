@@ -124,5 +124,6 @@ $(function() {
 		}
 	});
 
+    $('.ui.checkbox').checkbox();
 
 });

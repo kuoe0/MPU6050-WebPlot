@@ -6,15 +6,17 @@
 
 
 		<link rel="stylesheet" type="text/css" href="/static/components/normalize-css/normalize.css" />
-		<link rel="stylesheet" type="text/css" href="/static/css/style.css" />
+
+		<script type="text/javascript" src="/static/components/jquery/jquery.min.js"></script>
 
 		<link rel="stylesheet" type="text/css" href="/static/components/semantic/build/packaged/css/semantic.min.css" />
 		<script type="text/javascript" src="/static/components/semantic/build/packaged/javascript/semantic.min.js"></script>
 
-		<script type="text/javascript" src="/static/components/jquery/jquery.min.js"></script>
 		<script type="text/javascript" src="/static/components/flot/jquery.flot.js"></script>
 		<script type="text/javascript" src="/static/components/flot/jquery.flot.crosshair.js"></script>
+
 		<script type="text/javascript" src="/static/js/main.js"></script>
+		<link rel="stylesheet" type="text/css" href="/static/css/style.css" />
 	</head>
 	<body>
 	  <div class="ui one column page grid segment">
@@ -28,17 +30,34 @@
 						<i class="play icon"></i>
 					</div>
 				</div>
-                <div class="ui right floated icon buttons">
-                    <div id="moving-average-filter" class="ui toggle button">
-                        <i class="filter icon"></i>
-                    </div>
-                </div>
 
 
 				<div id="signal-plot" class="ui teal segment"></div>
+
+				<div class="ui two column grid">
+					<div class="column">
+						<div class="ui blue segment">
+							<div class="ui ribbon label">
+								Filter
+							</div>
+							<div class="ui form">
+								<div id="moving-average-filter" class="ui toggle checkbox">
+									<input type="checkbox" />
+									<label>MA Filter</label>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="column">
+						<div class="ui green segment">
+							
+						</div>
+					</div>
+				</div>
 			</div>
 
 		</div>
+
 		
 	</body>
 </html>
