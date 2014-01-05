@@ -11,7 +11,7 @@ Usage
 **For back-end:**
 
 ```
-$ ./service_start.py [serial port] [baud rate]
+$ ./service_start.py [serial port] [baud rate] [polling timeout]
 ```
 
 The data format received from deivce is 6 integers separated by comma in one line. For example, `123,456,789,-123,-456,-789`.
