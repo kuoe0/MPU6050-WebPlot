@@ -133,6 +133,7 @@ $(function() {
 	$('#moving-average-filter').click(function () {
 		if ($(this).hasClass('active')) {
 			$(this).removeClass('active');
+            $('#MA-slider').toggle('slow');
             $('#MA-slider').attr('disabled', true);
             update_MA('');
 			ws.send("MAF 0");
@@ -140,6 +141,7 @@ $(function() {
 		else {
 			$(this).addClass('active');
             update_MA($('#MA-slider').val());
+            $('#MA-slider').toggle('fast');
             $('#MA-slider').attr('disabled', false);
 		}
 	});
