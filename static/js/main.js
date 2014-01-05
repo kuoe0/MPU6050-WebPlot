@@ -114,11 +114,13 @@ $(function() {
 	$('#moving-average-filter').click(function () {
 		if ($(this).hasClass('active')) {
 			$(this).removeClass('active');
+            $('#MA-slider').attr('disabled', true);
 			moving_average_status = false;
 			ws.send("MAF 0");
 		}
 		else {
 			$(this).addClass('active');
+            $('#MA-slider').attr('disabled', false);
 			moving_average_status = true;
 			ws.send("MAF 10");
 		}
