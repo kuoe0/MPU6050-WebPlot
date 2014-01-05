@@ -3,6 +3,7 @@ Changelog
 
 **v0.5.2**
 
+- add parameter to change the timeout of polling  
 - fix the error result of moving average filter
 - add dynamic window size control of moving average filter
 - redesign the UI
