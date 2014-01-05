@@ -3,7 +3,7 @@ MPU6050-WebPlot
 
 plotting the signal from MPU6050
 
-Latest version: v0.5
+Latest version: v0.5.2
 
 Usage
 -----
