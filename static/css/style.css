@@ -42,4 +42,7 @@ input[type="range"]::-webkit-slider-thumb {
 	width: 0.7em;
 }
 
+#MA-slider {
+	display: none;
+}
 
