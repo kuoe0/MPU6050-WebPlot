@@ -24,7 +24,7 @@ $(function() {
 
 	function insert_signal(name) {
 		var panel = $('#signal-panel .ui.form');
-		panel.append('<div class="field"><div id="' + name + '" class="ui toggle checkbox"><input type="checkbox" /><label>' + name + '</label></div></div>');
+		panel.append('<div class="field"><div id="' + name + '" class="ui toggle checkbox"><input type="checkbox" checked /><label>' + name + '</label></div></div>');
 	}
 
 	var number_of_signal = 200;
