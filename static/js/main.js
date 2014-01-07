@@ -22,6 +22,11 @@ $(function() {
 		return data.signal;
 	}
 
+	function insert_signal(name) {
+		var panel = $('#signal-panel .ui.form');
+		panel.append('<div class="field"><div id="' + name + '" class="ui toggle checkbox"><input type="checkbox" /><label>' + name + '</label></div></div>');
+	}
+
 	var number_of_signal = 200;
 	var plot = null;
 	var legends = null;
@@ -38,6 +43,10 @@ $(function() {
 			yaxis: { min: -36000, max: 36000 },
 			legend: { position: "sw" }
 		});
+
+		for (var i = 0; i < data.length; ++i) {
+			insert_signal(data[i].label);
+		}
 
 		legends = $('#signal-plot .legendLabel');
 
