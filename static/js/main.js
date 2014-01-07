@@ -47,6 +47,7 @@ $(function() {
 		for (var i = 0; i < data.length; ++i) {
 			insert_signal(data[i].label);
 		}
+		$('.ui.checkbox').checkbox();
 
 		legends = $('#signal-plot .legendLabel');
 
