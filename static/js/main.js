@@ -1,4 +1,5 @@
 var ws = undefined;
+var signal_info = {};
 
 function update_MA(value) {
     if (value != '') {
@@ -13,13 +14,10 @@ function update_MA(value) {
 
 $(function() {
 
-	function get_series_data(data) {
-		return data.signal;
-	}
-
-	function insert_signal(name, color) {
+	function insert_signal(name) {
 		var panel = $('#signal-panel .ui.form');
-		panel.append('<div class="field"><div id="' + name + '" class="ui toggle checkbox"><input type="checkbox" checked /><label><i style="color: ' + color + '" class="sign icon"></i>' + name + '</label></div></div>');
+		var id = signal_info[name].label, color = signal_info[name].color;
+		panel.append('<div class="field"><div id="' + id + '" class="ui toggle checkbox"><input type="checkbox" checked /><label><i style="color: ' + color + '" class="sign icon"></i>' + id + '</label></div></div>');
 	}
 
 	var number_of_signal = 200;
@@ -40,8 +38,13 @@ $(function() {
 		});
 
 		data = plot.getData();
+
 		for (var i = 0; i < data.length; ++i) {
-			insert_signal(data[i].label, data[i].color);
+			signal_info[data[i].label] = {
+				'label': data[i].label,
+				'color': data[i].color
+			}
+			insert_signal(data[i].label);
 		}
 
 		$('.ui.checkbox').checkbox();
