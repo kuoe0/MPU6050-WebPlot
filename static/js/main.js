@@ -17,7 +17,7 @@ $(function() {
 	function insert_signal(name) {
 		var panel = $('#signal-panel .ui.form');
 		var id = signal_info[name].label, color = signal_info[name].color;
-		panel.append('<div class="field"><div id="' + id + '" class="ui toggle checkbox"><input type="checkbox" checked /><label><i style="color: ' + color + '" class="sign icon"></i>' + id + '</label></div></div>');
+		panel.append('<div class="field"><div id="signal-toggle-' + id + '" class="ui toggle checkbox"><input type="checkbox" checked /><label><i style="color: ' + color + '" class="sign icon"></i>' + id + '</label></div></div>');
 	}
 
 	var number_of_signal = 200;
@@ -46,6 +46,9 @@ $(function() {
 			}
 			insert_signal(data[i].label);
 		}
+
+		$("[id^='signal-toggle-']").click(function () {
+		});
 
 		$('.ui.checkbox').checkbox();
 
