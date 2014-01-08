@@ -17,7 +17,7 @@ $(function() {
 	function insert_signal(name) {
 		var panel = $('#signal-panel .ui.grid');
 		var id = signal_info[name].label, color = signal_info[name].color;
-		panel.append('<div id="signal-toggle-' + id + '" class="row"><div class="five wide column"><div class="ui toggle checkbox"><input type="checkbox" checked /><label><i style="color: ' + color + '" class="sign icon"></i>' + id + '</label></div></div><div class="three wide column"><input class="signal-value" readonly/></div></div>');
+		panel.append('<div id="signal-panel-' + id + '" class="row"><div class="five wide column"><div id="signal-toggle-' + id + '" class="ui toggle checkbox"><input type="checkbox" checked /><label><i style="color: ' + color + '" class="sign icon"></i>' + id + '</label></div></div><div class="three wide column"><input class="signal-value" readonly/></div></div>');
 	}
 
 	var number_of_signal = 200;
@@ -41,13 +41,22 @@ $(function() {
 
 		for (var i = 0; i < data.length; ++i) {
 			signal_info[data[i].label] = {
+				'idx': i,
 				'label': data[i].label,
-				'color': data[i].color
+				'color': data[i].color,
+				'show': true
 			}
 			insert_signal(data[i].label);
 		}
 
 		$("[id^='signal-toggle-']").click(function () {
+			var data = plot.getData();
+			var label = $(this).attr('id').replace(/signal-toggle-/, '');
+			var idx = signal_info[label].idx;
+			data[idx].lines.show = !data[idx].lines.show;
+			signal_info[label].show = !signal_info[label].show;
+			plot.setData(data);
+			plot.draw();
 		});
 
 		$('.ui.checkbox').checkbox();
@@ -66,6 +75,13 @@ $(function() {
 			init_draw(data);
 		}
 		else {
+
+			for (var i = 0; i < data.length; ++i) {
+				var label = data[i].label;
+				data[i]['lines'] = {};
+				data[i].lines['show'] = signal_info[label].show;
+				data[i]['color'] = signal_info[label].color;
+			}
 			// set data for plot
 			plot.setData(data);
 			// redraw graph
@@ -108,7 +124,7 @@ $(function() {
 
 			ret = (p1 == null) ? p2[1] : p1[1];
 
-			$('#signal-toggle-' + label + ' .signal-value').val(ret);
+			$('#signal-panel-' + label + ' .signal-value').val(ret);
 		}
 	};
 
