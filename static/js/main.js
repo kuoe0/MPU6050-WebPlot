@@ -15,9 +15,9 @@ function update_MA(value) {
 $(function() {
 
 	function insert_signal(name) {
-		var panel = $('#signal-panel .ui.form');
+		var panel = $('#signal-panel .ui.grid');
 		var id = signal_info[name].label, color = signal_info[name].color;
-		panel.append('<div class="field"><div id="signal-toggle-' + id + '" class="ui toggle checkbox"><input type="checkbox" checked /><label><i style="color: ' + color + '" class="sign icon"></i>' + id + '</label></div></div>');
+		panel.append('<div id="signal-toggle-' + id + '" class="row"><div class="five wide column"><div class="ui toggle checkbox"><input type="checkbox" checked /><label><i style="color: ' + color + '" class="sign icon"></i>' + id + '</label></div></div><div class="three wide column"><input class="signal-value" readonly/></div></div>');
 	}
 
 	var number_of_signal = 200;
