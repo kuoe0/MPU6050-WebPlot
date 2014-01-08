@@ -1,4 +1,5 @@
 var ws = undefined;
+var signal_info = {};
 
 function update_MA(value) {
     if (value != '') {
@@ -13,13 +14,10 @@ function update_MA(value) {
 
 $(function() {
 
-	function get_series_data(data) {
-		// append value after each label
-		for (var i = 0; i < data.signal.length; ++i) {
-			data.signal[i].label = data.signal[i].label + " = 0";
-		}
-
-		return data.signal;
+	function insert_signal(name) {
+		var panel = $('#signal-panel .ui.grid');
+		var id = signal_info[name].label, color = signal_info[name].color;
+		panel.append('<div id="signal-panel-' + id + '" class="row"><div class="five wide column"><div id="signal-toggle-' + id + '" class="ui toggle checkbox"><input type="checkbox" checked /><label><i style="color: ' + color + '" class="sign icon"></i>' + id + '</label></div></div><div class="three wide column"><input class="signal-value" readonly/></div></div>');
 	}
 
 	var number_of_signal = 200;
@@ -36,10 +34,32 @@ $(function() {
 			grid: { hoverable: true, autoHighlight: false },
 			xaxis: { show: false },
 			yaxis: { min: -36000, max: 36000 },
-			legend: { position: "sw" }
+			legend: { show: false}
 		});
 
-		legends = $('#signal-plot .legendLabel');
+		data = plot.getData();
+
+		for (var i = 0; i < data.length; ++i) {
+			signal_info[data[i].label] = {
+				'idx': i,
+				'label': data[i].label,
+				'color': data[i].color,
+				'show': true
+			}
+			insert_signal(data[i].label);
+		}
+
+		$("[id^='signal-toggle-']").click(function () {
+			var data = plot.getData();
+			var label = $(this).attr('id').replace(/signal-toggle-/, '');
+			var idx = signal_info[label].idx;
+			data[idx].lines.show = !data[idx].lines.show;
+			signal_info[label].show = !signal_info[label].show;
+			plot.setData(data);
+			plot.draw();
+		});
+
+		$('.ui.checkbox').checkbox();
 
 	}
 
@@ -48,37 +68,42 @@ $(function() {
 
     ws.onmessage = function (evt) {
 
+		var data = JSON.parse(evt.data);
+		data = data.signal;
+
 		if (plot == null) {
-			var data = JSON.parse(evt.data);
-			data = get_series_data(data);
 			init_draw(data);
 		}
+		else {
 
-		var data = JSON.parse(evt.data);
-		data = get_series_data(data);
-		// set data for plot
-		plot.setData(data);
-		// redraw graph
-		plot.draw();
-		// uplate legend
-		update_legend();
-
+			for (var i = 0; i < data.length; ++i) {
+				var label = data[i].label;
+				data[i]['lines'] = {};
+				data[i].lines['show'] = signal_info[label].show;
+				data[i]['color'] = signal_info[label].color;
+			}
+			// set data for plot
+			plot.setData(data);
+			// redraw graph
+			plot.draw();
+		}
+		// uplate value of signal
+		update_signal_value();
 	};
 
 
 	var latest_pos = null;
-	var update_legend_timeout = null;
+	var update_signal_value_timeout = null;
 
-	function update_legend() {
+	function update_signal_value() {
 
 		if (latest_pos == null) {
 			return;
 		}
 
-		update_legend_timeout = null;
+		update_signal_value_timeout = null;
 
 		var pos = latest_pos;
-
 		var axes = plot.getAxes();
 
 		if (pos.x < axes.xaxis.min || pos.x > axes.xaxis.max ||
@@ -89,6 +114,7 @@ $(function() {
 		var dataset = plot.getData();
 
 		for (var i = 0; i < dataset.length; ++i) {
+			var label = dataset[i].label;
 			var series = dataset[i];
 
 			var idx = Math.floor(pos.x);
@@ -97,15 +123,15 @@ $(function() {
 			var ret = null;
 
 			ret = (p1 == null) ? p2[1] : p1[1];
-			var new_label = series.label.replace(/=.*/, "= " + ret);
-			legends.eq(i).text(new_label);
+
+			$('#signal-panel-' + label + ' .signal-value').val(ret);
 		}
 	};
 
 	$('#signal-plot').bind("plothover", function (event, pos, iten) {
 		latest_pos = pos;
-		if (!update_legend_timeout) {
-			update_legend_timeout = setTimeout(update_legend, 50);
+		if (!update_signal_value_timeout) {
+			update_signal_value_timeout = setTimeout(update_signal_value, 50);
 		}
 	});
 
