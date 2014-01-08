@@ -14,11 +14,6 @@ function update_MA(value) {
 $(function() {
 
 	function get_series_data(data) {
-		// append value after each label
-		for (var i = 0; i < data.signal.length; ++i) {
-			data.signal[i].label = data.signal[i].label + " = 0";
-		}
-
 		return data.signal;
 	}
 
@@ -60,12 +55,12 @@ $(function() {
 
 		if (plot == null) {
 			var data = JSON.parse(evt.data);
-			data = get_series_data(data);
+			data = data.signal;
 			init_draw(data);
 		}
 
 		var data = JSON.parse(evt.data);
-		data = get_series_data(data);
+		data = data.signal;
 		// set data for plot
 		plot.setData(data);
 		// redraw graph
