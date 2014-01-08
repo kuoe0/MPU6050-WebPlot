@@ -59,36 +59,35 @@ $(function() {
 
     ws.onmessage = function (evt) {
 
-		if (plot == null) {
-			var data = JSON.parse(evt.data);
-			data = data.signal;
-			init_draw(data);
-		}
-
 		var data = JSON.parse(evt.data);
 		data = data.signal;
-		// set data for plot
-		plot.setData(data);
-		// redraw graph
-		plot.draw();
-		// uplate legend
-		update_legend();
+
+		if (plot == null) {
+			init_draw(data);
+		}
+		else {
+			// set data for plot
+			plot.setData(data);
+			// redraw graph
+			plot.draw();
+		}
+		// uplate value of signal
+		update_signal_value();
 	};
 
 
 	var latest_pos = null;
-	var update_legend_timeout = null;
+	var update_signal_value_timeout = null;
 
-	function update_legend() {
+	function update_signal_value() {
 
 		if (latest_pos == null) {
 			return;
 		}
 
-		update_legend_timeout = null;
+		update_signal_value_timeout = null;
 
 		var pos = latest_pos;
-
 		var axes = plot.getAxes();
 
 		if (pos.x < axes.xaxis.min || pos.x > axes.xaxis.max ||
@@ -99,6 +98,7 @@ $(function() {
 		var dataset = plot.getData();
 
 		for (var i = 0; i < dataset.length; ++i) {
+			var label = dataset[i].label;
 			var series = dataset[i];
 
 			var idx = Math.floor(pos.x);
@@ -107,15 +107,15 @@ $(function() {
 			var ret = null;
 
 			ret = (p1 == null) ? p2[1] : p1[1];
-			var new_label = series.label.replace(/=.*/, "= " + ret);
-			legends.eq(i).text(new_label);
+
+			$('#signal-toggle-' + label + ' .signal-value').val(ret);
 		}
 	};
 
 	$('#signal-plot').bind("plothover", function (event, pos, iten) {
 		latest_pos = pos;
-		if (!update_legend_timeout) {
-			update_legend_timeout = setTimeout(update_legend, 50);
+		if (!update_signal_value_timeout) {
+			update_signal_value_timeout = setTimeout(update_signal_value, 50);
 		}
 	});
 
