@@ -124,7 +124,7 @@ $(function() {
 
 			ret = (p1 == null) ? p2[1] : p1[1];
 
-			$('#signal-panel-' + label + ' .signal-value').val(ret);
+			$('#signal-panel-' + label + ' .signal-value').val(ret.toFixed(0));
 		}
 	};
 
