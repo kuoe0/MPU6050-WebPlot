@@ -17,9 +17,9 @@ $(function() {
 		return data.signal;
 	}
 
-	function insert_signal(name) {
+	function insert_signal(name, color) {
 		var panel = $('#signal-panel .ui.form');
-		panel.append('<div class="field"><div id="' + name + '" class="ui toggle checkbox"><input type="checkbox" checked /><label>' + name + '</label></div></div>');
+		panel.append('<div class="field"><div id="' + name + '" class="ui toggle checkbox"><input type="checkbox" checked /><label><i style="color: ' + color + '" class="sign icon"></i>' + name + '</label></div></div>');
 	}
 
 	var number_of_signal = 200;
@@ -36,15 +36,15 @@ $(function() {
 			grid: { hoverable: true, autoHighlight: false },
 			xaxis: { show: false },
 			yaxis: { min: -36000, max: 36000 },
-			legend: { position: "sw" }
+			legend: { show: false}
 		});
 
+		data = plot.getData();
 		for (var i = 0; i < data.length; ++i) {
-			insert_signal(data[i].label);
+			insert_signal(data[i].label, data[i].color);
 		}
-		$('.ui.checkbox').checkbox();
 
-		legends = $('#signal-plot .legendLabel');
+		$('.ui.checkbox').checkbox();
 
 	}
 
@@ -67,7 +67,6 @@ $(function() {
 		plot.draw();
 		// uplate legend
 		update_legend();
-
 	};
 
 
