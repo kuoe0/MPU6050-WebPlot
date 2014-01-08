@@ -42,4 +42,22 @@ input[type="range"]::-webkit-slider-thumb {
 	width: 0.7em;
 }
 
+#MA-slider {
+	display: none;
+}
+
+.signal-value {
+    border: none;
+	border-radius: 0.3em;
+
+	box-shadow: 0 0 0 1px rgba(0,0,0,0.1);
+	box-sizing: border-box;
+
+	color: gray;
+    font-size: 1em;
+    font-weight: 100;
+    padding: 0 0.5em;
+    text-align: right;
+    width: 100%;
+}
 

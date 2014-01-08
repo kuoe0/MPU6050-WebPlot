@@ -1,6 +1,11 @@
 Changelog
 ----------
 
+**v0.5.5**
+
+- add signal panel to show signal information
+- add toggle feature for signal display control
+
 **v0.5.2**
 
 - add parameter to change the timeout of polling  
