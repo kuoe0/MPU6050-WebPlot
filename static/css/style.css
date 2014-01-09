@@ -28,7 +28,9 @@
 input[type=range] {
 	-webkit-appearance: none;
 	border-radius: 50rem;
-	box-shadow: 0 0 0 1px rgba(0,0,0,0.1);
+	border-style: solid;
+	border-width: 1px;
+	border-color: rgba(0, 0, 0, 0.1);
 	box-sizing: border-box;
 	padding: 5px 7px;
 	width: 100%;
