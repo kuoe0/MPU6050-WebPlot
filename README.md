@@ -23,7 +23,7 @@ Connect to [http://localhost:8888/](http://localhost:8888) in web browser.
 Preview
 -------
 
-![web plot](preview.png)
+![web plot](https://github.com/KuoE0/MPU6050-WebPlot/raw/master/preview.png)
 
 Environment
 -----------
