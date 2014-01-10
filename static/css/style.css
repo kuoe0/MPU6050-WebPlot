@@ -25,7 +25,7 @@
 	margin-bottom: 1em;
 }
 
-input[type=range] {
+.ui.slider.range input[type=range] {
 	-webkit-appearance: none;
 	border-radius: 50rem;
 	border-style: solid;
@@ -36,7 +36,7 @@ input[type=range] {
 	width: 100%;
 }
 
-input[type="range"]::-webkit-slider-thumb {
+.ui.slider.range input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     background-color: #89B84C;
     border-radius: 50rem;
