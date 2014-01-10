@@ -1,18 +1,10 @@
-var ws = undefined;
-var signal_info = {};
-
-function update_MA(value) {
-    if (value != '') {
-        $('#moving-average-filter label').text('MA Filter (' + value + ')');
-        $('#MA-slider').val(value);
-        ws.send("MAF " + value);
-    }
-    else {
-        $('#moving-average-filter label').text('MA Filter');
-    }
-}
 
 $(function() {
+
+	var number_of_signal = 200;
+	var plot = null;
+	var ws = undefined;
+	var signal_info = {};
 
 	function insert_signal(name) {
 		var panel = $('#signal-panel .ui.grid');
@@ -20,9 +12,6 @@ $(function() {
 		panel.append('<div id="signal-panel-' + id + '" class="row"><div class="five wide column"><div id="signal-toggle-' + id + '" class="ui toggle checkbox"><input type="checkbox" checked /><label><i style="color: ' + color + '" class="sign icon"></i>' + id + '</label></div></div><div class="three wide column"><input class="signal-value" readonly/></div></div>');
 	}
 
-	var number_of_signal = 200;
-	var plot = null;
-	var legends = null;
 
 	function init_draw(data) {
 
@@ -161,15 +150,23 @@ $(function() {
 			$(this).removeClass('active');
             $('#MA-slider').toggle('slow');
             $('#MA-slider').attr('disabled', true);
-            update_MA('');
+			$('#MA-value').text('');
 			ws.send("MAF 0");
 		}
 		else {
+			var value = $('#MA-slider').val();
 			$(this).addClass('active');
-            update_MA($('#MA-slider').val());
+			$('#MA-value').text('(' + value + ')');
             $('#MA-slider').toggle('fast');
             $('#MA-slider').attr('disabled', false);
 		}
+	});
+
+	$('#MA-slider').change(function () {
+		var value = $(this).val();
+		$('#MA-value').text('(' + value + ')');
+		$('#MA-slider').val(value);
+		ws.send("MAF " + value);
 	});
 
     $('.ui.checkbox').checkbox();
