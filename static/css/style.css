@@ -38,7 +38,7 @@
 
 @-moz-document url-prefix() {
 	.ui.slider.range input[type=range] {
-		padding: 0;
+		padding: 0 5px;
 	}
 }
 
