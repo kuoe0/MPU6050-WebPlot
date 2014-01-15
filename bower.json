@@ -1,19 +1,19 @@
 {
-  "name": "MPU6050-WebPlot",
-  "version": "0.1.1",
-  "homepage": "https://github.com/KuoE0/MPU6050-WebPlot",
-  "authors": [],
-  "license": "MIT",
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "test",
-    "tests"
-  ],
-  "dependencies": {
-    "flot": "~0.8.2",
-    "semantic": "~0.11.0",
-    "normalize-css": "~2.1.3"
-  }
+    "authors": [],
+    "dependencies": {
+        "flot": "~0.8.2",
+        "normalize-css": "~2.1.3",
+        "semantic": "~0.11.0"
+    },
+    "homepage": "https://github.com/KuoE0/MPU6050-WebPlot",
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "test",
+        "tests"
+    ],
+    "license": "MIT",
+    "name": "MPU6050-WebPlot",
+    "version": "0.1.1"
 }
