@@ -83,14 +83,13 @@ for s in sorted(config['signal_desc'], key=lambda x: x['order']):
 data_length = sum([s.size for s in signal_desc_list])
 plot_size = config['plot_size']
 
-callback_timeout = int(sys.argv[3])
+plot_update_interval = int(sys.argv[3])
 client = list() # list of websocket client
 
 serial_pending = list()
 tx_status = False
 size_window_MA = 0
-signal_set = [[0] * number_of_signal] * plot_size
-last_signal_set = [[0] * number_of_signal] * plot_size
+signal_pool = [[0] * number_of_signal] * plot_size
 signal_type = [s.name for s in signal_desc_list]
 
 # SIGINT handler to close serial connection
@@ -116,7 +115,7 @@ def receive_signal():
 # parse out the signal value
 def parse_data(data):
 
-    global signal_set
+    global signal_pool
 
     if not hasattr(parse_data, 'unparse_data'):
         parse_data.unparse_data = ''
@@ -145,11 +144,9 @@ def parse_data(data):
             cnt += s.size
             signal_group.append(value)
 
-        signal_set.append(signal_group)
+        signal_pool.append(signal_group)
 
-def moving_average_filter(last_signal, signal, size_window):
-    
-    signal = ([0] * ((size_window - 1) - len(last_signal))) + list(last_signal) + list(signal)
+def moving_average_filter(signal, size_window):
     return list(np.convolve(signal, [1.0 / size_window] * size_window, 'valid'))
 
 def make_init_data():
@@ -167,29 +164,23 @@ def make_init_data():
 
 def make_data():
 
-    global signal_set
+    global signal_pool
     global signal_type
-    global last_signal_set
     global plot_size
     global size_window_MA
 
     # take out the signal to return
-    signals = signal_set[:min(plot_size, len(signal_set))]
-    last_signals = last_signal_set[-(min(size_window_MA - 1, len(last_signal_set))):]
-
-    # fill the signal
-    if len(signals) < plot_size:
-        signals.extend([[0] * 6] * (plot_size - len(signals)))
+    # signals = signal_pool[:min(plot_size, len(signal_pool))]
+    signals = signal_pool[-(plot_size + size_window_MA - 1):]
 
     # transpose signals to make the signal of same type in same list
     signals = zip(*signals)
-    last_signals = zip(*last_signals)
 
     ret = list()
 
     for i in xrange(6):
         if size_window_MA != 0:
-            signals[i] = moving_average_filter(last_signals[i], signals[i], size_window_MA)
+            signals[i] = moving_average_filter(signals[i], size_window_MA)
         ret.append({ 'data': [p for p in enumerate(signals[i])], 'label': signal_type[i] })
     ret = json.dumps({ 'signal': ret })
     return ret
@@ -199,16 +190,14 @@ def signal_tx():
 
     global tx_status
     global plot_size
-    global signal_set
-    global last_signal_set
+    global signal_pool
 
     if not tx_status:
         return
     
-    # pop out the transmitted signal
-    if len(signal_set):
-        last_signal_set.append(signal_set.pop(0))
-        last_signal_set = last_signal_set[-plot_size:]
+    # keep the signal data in twice of plot_size
+    if len(signal_pool):
+        signal_pool = signal_pool[max(0, -2 * plot_size):]
 
     ret = make_data()
     for cl in client:
@@ -223,7 +212,7 @@ class socket_handler(tornado.websocket.WebSocketHandler):
 
     def on_message(self, message):
         global tx_status
-        global signal_set
+        global signal_pool
         global toggle_moving_average_filter
         global size_window_MA
 
@@ -236,7 +225,7 @@ class socket_handler(tornado.websocket.WebSocketHandler):
             tx_status = False
             ser.write('toggleit')
         elif token[0] == "clear":
-            signal_set = [[0] * 6] * plot_size
+            signal_pool = [[0] * 6] * plot_size
             self.write_message(make_init_data())
         elif token[0] == "MAF":
             size_window_MA = int(token[1])
@@ -284,7 +273,7 @@ if __name__ == "__main__":
     receive_loop = tornado.ioloop.PeriodicCallback(receive_signal, 2)
     receive_loop.start()
 
-    transmit_data = tornado.ioloop.PeriodicCallback(signal_tx, callback_timeout)
+    transmit_data = tornado.ioloop.PeriodicCallback(signal_tx, plot_update_interval)
     transmit_data.start()
 
     application.listen(tornado_port)
