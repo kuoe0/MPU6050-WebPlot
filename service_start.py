@@ -259,6 +259,15 @@ application = tornado.web.Application([
     (r'/ws', socket_handler),
     ], **settings)
 
+################################################################################
+###                           __  __       _                                 ###
+###                          |  \/  |     (_)                                ###
+###                          | \  / | __ _ _ _ __                            ###
+###                          | |\/| |/ _` | | '_ \                           ###
+###                          | |  | | (_| | | | | |                          ###
+###                          |_|  |_|\__,_|_|_| |_|                          ###
+################################################################################
+
 if __name__ == "__main__":
     #tell tornado to run signal_tx every 1 ms
     serial_loop = tornado.ioloop.PeriodicCallback(signal_tx, callback_timeout)
