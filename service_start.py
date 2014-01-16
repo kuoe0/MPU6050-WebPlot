@@ -104,7 +104,7 @@ def handler_SIGINT(signum, frame):
 signal.signal(signal.SIGINT, handler_SIGINT)
 
 # receive signal with a non-blocking way
-def recieve_signal():
+def receive_signal():
 
     try:
         if ser.inWaiting() != 0:
@@ -202,8 +202,6 @@ def signal_tx():
     global signal_set
     global last_signal_set
 
-    recieve_signal()
-
     if not tx_status:
         return
     
@@ -283,9 +281,11 @@ if __name__ == "__main__":
         print "Device is not ready. Please restart it and this application."
         sys.exit()
 
-    #tell tornado to run signal_tx in every x ms
-    serial_loop = tornado.ioloop.PeriodicCallback(signal_tx, callback_timeout)
-    serial_loop.start()
+    receive_loop = tornado.ioloop.PeriodicCallback(receive_signal, 2)
+    receive_loop.start()
+
+    transmit_data = tornado.ioloop.PeriodicCallback(signal_tx, callback_timeout)
+    transmit_data.start()
 
     application.listen(tornado_port)
     print "Starting server on port number {0}...".format(tornado_port)
