@@ -69,7 +69,6 @@ def return_exception_msg(e):
 # create serial object
 serial_port = sys.argv[1]
 serial_baudrate = int(sys.argv[2])
-ser = serial.Serial(serial_port, serial_baudrate)
 
 # read configuration from config file
 with open('config.json') as f:
@@ -234,8 +233,10 @@ class socket_handler(tornado.websocket.WebSocketHandler):
 
         if token[0] == "play":
             tx_status = True
+            ser.write('toggleit')
         elif token[0] == "pause":
             tx_status = False
+            ser.write('toggleit')
         elif token[0] == "clear":
             signal_set = [[0] * 6] * plot_size
             self.write_message(make_init_data())
@@ -269,7 +270,20 @@ application = tornado.web.Application([
 ################################################################################
 
 if __name__ == "__main__":
-    #tell tornado to run signal_tx every 1 ms
+
+    # setup serial connection
+    ser = serial.Serial(serial_port, serial_baudrate)
+
+    # read status
+    status = ser.readline()
+    status = status.translate(None, '\n\r')
+
+    # device is not ready
+    if status != "ready":
+        print "Device is not ready. Please restart it and this application."
+        sys.exit()
+
+    #tell tornado to run signal_tx in every x ms
     serial_loop = tornado.ioloop.PeriodicCallback(signal_tx, callback_timeout)
     serial_loop.start()
 
