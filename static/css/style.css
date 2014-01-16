@@ -16,6 +16,14 @@
 	padding-bottom: 50px;
 }
 
+#title-block {
+    padding: 0;
+}
+
+#title-block h1 {
+    margin: 0;
+}
+
 #title {
 	display: inline-block;
 	font-weight: 100;
