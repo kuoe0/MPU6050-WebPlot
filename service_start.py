@@ -83,7 +83,9 @@ for s in sorted(config['signal_desc'], key=lambda x: x['order']):
 data_length = sum([s.size for s in signal_desc_list])
 plot_size = config['plot_size']
 
-plot_update_interval = int(sys.argv[3])
+sampling_rate = int(sys.argv[3])
+signal_receive_interval = 1000 / sampling_rate
+plot_update_interval = int(sys.argv[4])
 client = list() # list of websocket client
 
 serial_pending = list()
@@ -270,7 +272,7 @@ if __name__ == "__main__":
         print "Device is not ready. Please restart it and this application."
         sys.exit()
 
-    receive_loop = tornado.ioloop.PeriodicCallback(receive_signal, 2)
+    receive_loop = tornado.ioloop.PeriodicCallback(receive_signal, signal_receive_interval)
     receive_loop.start()
 
     transmit_data = tornado.ioloop.PeriodicCallback(signal_tx, plot_update_interval)
