@@ -1,7 +1,6 @@
 
 $(function() {
 
-	var number_of_signal = 200;
 	var plot = null;
 	var ws = undefined;
 	var signal_info = {};
@@ -11,7 +10,6 @@ $(function() {
 		var id = signal_info[name].label, color = signal_info[name].color;
 		panel.append('<div id="signal-panel-' + id + '" class="row"><div class="five wide column"><div id="signal-toggle-' + id + '" class="ui toggle checkbox"><input type="checkbox" checked /><label><i style="color: ' + color + '" class="sign icon"></i>' + id + '</label></div></div><div class="three wide column"><input class="signal-value" readonly/></div></div>');
 	}
-
 
 	function init_draw(data) {
 
