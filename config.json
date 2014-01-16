@@ -1,0 +1,35 @@
+{
+	"plot_size": 200,
+    "signal_desc": [
+        {
+			"order": 0,
+            "name": "x-acc",
+            "sizeof": 2
+        },
+        {
+			"order": 1,
+            "name": "y-acc",
+            "sizeof": 2
+        },
+        {
+			"order": 2,
+            "name": "z-acc",
+            "sizeof": 2
+        },
+        {
+			"order": 3,
+            "name": "x-gyro",
+            "sizeof": 2
+        },
+        {
+			"order": 4,
+            "name": "y-gyro",
+            "sizeof": 2
+        },
+        {
+			"order": 5,
+            "name": "z-gyro",
+            "sizeof": 2
+        }
+    ]
+}
